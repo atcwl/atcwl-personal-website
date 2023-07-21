@@ -10,8 +10,8 @@ export const Banner = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [text, setText] = useState('');
   const [delta, setDelta] = useState(300 - Math.random() * 100);
-  const [index, setIndex] = useState(1);
-  const toRotate = [ "Software Developer", "Machine Learning", "Cyber Security" ];
+  const [setIndex, setSetIndex] = useState(1); // Define setIndex state variable
+  const toRotate = ["Software Developer", "Machine Learning", "Cyber Security"];
   const period = 2000;
 
   useEffect(() => {
@@ -35,18 +35,19 @@ export const Banner = () => {
 
     if (!isDeleting && updatedText === fullText) {
       setIsDeleting(true);
-      setIndex(prevIndex => prevIndex - 1);
+      setLoopNum(loopNum + 1);
+      setSetIndex(prevIndex => prevIndex - 1); // Update setIndex state
       setDelta(period);
     } else if (isDeleting && updatedText === '') {
       setIsDeleting(false);
       setLoopNum(loopNum + 1);
-      setIndex(1);
+      setSetIndex(1); // Reset setIndex state
       setDelta(500);
     } else {
-      setIndex(prevIndex => prevIndex + 1);
+      setSetIndex(prevIndex => prevIndex + 1); // Update setIndex state
     }
   }
-
+  
   return (
     <section className="banner" id="home">
       <Container>
