@@ -29,7 +29,7 @@ jobs:
       - name: Build
         run: npm run build --if-present
 
-      - Upload artifact for deployement build folder 
+      - name: Upload artifact for deployement build folder 
         uses: actions/upload-artifact@v2
         with:
           name: build
