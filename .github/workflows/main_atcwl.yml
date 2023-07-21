@@ -17,28 +17,23 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set up Python version
-        uses: actions/setup-python@v1
+      - name: Set up Node.js version
+        uses: actions/setup-node@v1
         with:
-          python-version: '3.11'
-
-      - name: Create and start virtual environment
-        run: |
-          python -m venv venv
-          source venv/bin/activate
+          node-version: '12.x'
       
+    
       - name: Install dependencies
-        run: pip install -r requirements.txt
-        
-      # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
-      
-      - name: Upload artifact for deployment jobs
+        run: npm install
+
+      - name: Build
+        run: npm run build --if-present
+
+      - Upload artifact for deployement build folder 
         uses: actions/upload-artifact@v2
         with:
-          name: python-app
-          path: |
-            . 
-            !venv/
+          name: build
+          path: build
 
   deploy:
     runs-on: ubuntu-latest
@@ -51,8 +46,8 @@ jobs:
       - name: Download artifact from build job
         uses: actions/download-artifact@v2
         with:
-          name: python-app
-          path: .
+          name: build
+          path: build
           
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v2
@@ -61,3 +56,14 @@ jobs:
           app-name: 'atcwl'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_CBA450E6753E4B3BA6FABB930CE882E7 }}
+          package: build
+    
+      - name: 'Run tests'
+        run: |
+          curl --fail ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+
+      - name: 'Post deployment smoke test'
+        run: |
+          curl --fail ${{ steps.deploy-to-webapp.outputs.webapp-url }}/api/health
+
+  
