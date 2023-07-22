@@ -29,16 +29,15 @@ jobs:
       - name: Build
         run: npm run build --if-present
 
-      - name: Upload artifact for deployement build folder and package.json
-        # to alsoincluse package.jsno we need to add it to the path lets dobelow:
+      - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
           name: build
           path: |
             build
-            package.json
-            package-lock.json
-
+      - name: confirm the artifact is uploaded
+        run: ls -R
+  
   deploy:
     runs-on: ubuntu-latest 
     needs: build
@@ -52,13 +51,16 @@ jobs:
         with:
           name: build
           path: build
+      - name: confirm the artifact is downloaded
+        run: ls -R
           
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v2
         id: deploy-to-webapp
         with:
           app-name: 'atcwl'
-          slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_CBA450E6753E4B3BA6FABB930CE882E7 }}
-          package: build
+          package: build 
+          node-version: 14.x
+
   
